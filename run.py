@@ -17,16 +17,16 @@ class Ball:
         screen.blit(self.ball, self.geometry)
 
     def move(self):
-        if (self.geometry.x + self.geometry.width <= 800) and (self.geometry.x >= 0):
-            if (self.geometry.x + self.geometry.width == 800) or (self.geometry.x == 0):
+        if (self.geometry.x + self.geometry.width <= self.width) and (self.geometry.x >= 0):
+            if (self.geometry.x + self.geometry.width == self.width) or (self.geometry.x == 0):
                 self.direction[0] = -self.direction[0]
             self.geometry.x += self.direction[0]
         else:
             self.direction[0] = -self.direction[0]
             self.geometry.x += self.direction[0]
 
-        if (self.geometry.y + self.geometry.height <= 600) and (self.geometry.y >= 0):
-            if (self.geometry.y + self.geometry.height == 600) or (self.geometry.y == 0):
+        if (self.geometry.y + self.geometry.height <= self.height) and (self.geometry.y >= 0):
+            if (self.geometry.y + self.geometry.height == self.height) or (self.geometry.y == 0):
                 self.direction[1] = -self.direction[1]
             self.geometry.y += self.direction[1]
         else:
@@ -34,19 +34,23 @@ class Ball:
             self.geometry.y += self.direction[1]
 
     def resized_screen(self, screen_size):
-	self.geometry.x = (self.geometry.x // self.width) * screen_size[0]
-        self.geometry.y = (self.geometry.y // self.height) * screen_size[1]
         self.size = self.width, self.height = screen_size[0], screen_size[1]
+        if self.geometry.x + self.geometry.width > self.width:
+            self.geometry.x = self.width - self.geometry.width
+        if self.geometry.y + self.geometry.height > self.height:
+            self.geometry.y = self.height - self.geometry.height
 
-        # self.geometry.x = self.width // 2
-        # self.geometry.y = self.height // 2
+
+class Platform:
+    def __init__(self):
+        pass
 
 
 def main():
     colors = {"BLACK": (0, 0, 0), "GREEN": (0, 255, 0)}
     size = width, height = 800, 600
     pygame.init()
-    screen = pygame.display.set_mode(size)
+    screen = pygame.display.set_mode(size, pygame.RESIZABLE)
 
     ball = Ball(size)
 
@@ -58,7 +62,12 @@ def main():
             if event.type == pygame.VIDEORESIZE:
                 size = width, height = event.w, event.h
                 screen = pygame.display.set_mode(size, pygame.RESIZABLE)
-                ball.resized_screen()
+                ball.resized_screen(size)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w:
+                    ball.geometry.y -= 30
+                if event.key == pygame.K_s:
+                    ball.geometry.y += 30
 
         screen.fill(colors["BLACK"])
         ball.draw_ball(screen)
@@ -71,3 +80,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
