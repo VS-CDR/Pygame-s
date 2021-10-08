@@ -42,17 +42,40 @@ class Ball:
 
 
 class Platform:
-    def __init__(self):
-        pass
+    def __init__(self, screen_size, color):
+        self.color = color
+        self.size = self.scr_width, self.scr_height = screen_size[0], screen_size[1]
+        self.x, self.y = self.scr_width // 2, self.scr_height // 2
+        self.w, self.h = (100, 20)
+        self.width = 0
+
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h), self.width)
+
+    def move(self, direction):
+        if direction == 'A':
+            if self.x > 0:
+                self.x -= 10
+        if direction == 'D':
+            if self.x + self.w < self.scr_width:
+                self.x += 10
+
+    def resized_screen(self, screen_size):
+        self.size = self.scr_width, self.scr_height = screen_size[0], screen_size[1]
+        if self.x + self.w > self.scr_width:
+            self.x = self.scr_width - self.w
+        if self.y + self.h > self.scr_height:
+            self.y = self.scr_height - self.h
 
 
 def main():
-    colors = {"BLACK": (0, 0, 0), "GREEN": (0, 255, 0)}
+    colors = {"BLACK": (0, 0, 0), "GREEN": (0, 255, 0), "BROWN": (139, 69, 19)}
     size = width, height = 800, 600
     pygame.init()
     screen = pygame.display.set_mode(size, pygame.RESIZABLE)
 
     ball = Ball(size)
+    platform = Platform(size, colors["BROWN"])
 
     game_over = False
     while not game_over:
@@ -63,14 +86,16 @@ def main():
                 size = width, height = event.w, event.h
                 screen = pygame.display.set_mode(size, pygame.RESIZABLE)
                 ball.resized_screen(size)
+                platform.resized_screen(size)
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w:
-                    ball.geometry.y -= 30
-                if event.key == pygame.K_s:
-                    ball.geometry.y += 30
+                if event.key == pygame.K_a:
+                    platform.move('A')
+                if event.key == pygame.K_d:
+                    platform.move('D')
 
         screen.fill(colors["BLACK"])
-        ball.draw_ball(screen)
+        ball.draw(screen)
+        platform.draw(screen)
 
         pygame.display.flip()
         pygame.time.wait(32)
