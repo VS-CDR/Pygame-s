@@ -34,9 +34,12 @@ class Ball:
             self.geometry.y += self.direction[1]
 
     def resized_screen(self, screen_size):
+	self.geometry.x = (self.geometry.x // self.width) * screen_size[0]
+        self.geometry.y = (self.geometry.y // self.height) * screen_size[1]
         self.size = self.width, self.height = screen_size[0], screen_size[1]
-        self.geometry.x = self.width // 2
-        self.geometry.y = self.height // 2
+
+        # self.geometry.x = self.width // 2
+        # self.geometry.y = self.height // 2
 
 
 def main():
