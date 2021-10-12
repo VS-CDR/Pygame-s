@@ -8,11 +8,10 @@ class Ball:
         self.ball = pygame.image.load("basketball.png")
         self.geometry = self.ball.get_rect()
         self.size = self.width, self.height = screen_size[0], screen_size[1]
-        self.geometry.x = self.width // 2
-        self.geometry.y = self.height // 2
+        self.geometry.x, self.geometry.y = self.width // 2, self.height // 2
         self.direction = [randint(1, self.geometry.x // 32), randint(1, self.geometry.y // 32)]
 
-    def draw_ball(self, screen):
+    def draw(self, screen):
         self.move()
         screen.blit(self.ball, self.geometry)
 
@@ -54,11 +53,16 @@ class Platform:
 
     def move(self, direction):
         if direction == 'A':
+            self.cur_shift = -10
             if self.x > 0:
-                self.x -= 10
+                self.x += self.cur_shift
         if direction == 'D':
+            self.cur_shift = 10
             if self.x + self.w < self.scr_width:
-                self.x += 10
+                self.x += self.cur_shift
+
+    def stop(self):
+        self.cur_shift = 0
 
     def resized_screen(self, screen_size):
         self.size = self.scr_width, self.scr_height = screen_size[0], screen_size[1]
