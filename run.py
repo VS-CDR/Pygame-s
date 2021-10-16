@@ -10,6 +10,7 @@ class Ball:
         self.size = self.width, self.height = screen_size[0], screen_size[1]
         self.geometry.x, self.geometry.y = self.width // 2, self.height // 2
         self.direction = [randint(1, self.geometry.x // 32), randint(1, self.geometry.y // 32)]
+        self.game_over = False
 
     def draw(self, screen):
         self.move()
@@ -27,7 +28,12 @@ class Ball:
         if (self.geometry.y + self.geometry.height <= self.height) and (self.geometry.y >= 0):
             if (self.geometry.y + self.geometry.height == self.height) or (self.geometry.y == 0):
                 self.direction[1] = -self.direction[1]
+                self.game_over = True
             self.geometry.y += self.direction[1]
+        elif self.geometry.y + self.geometry.height + self.direction[1] >= self.height:
+            self.direction[0] = 0
+            self.direction[1] = 0
+            self.game_over = True
         else:
             self.direction[1] = -self.direction[1]
             self.geometry.y += self.direction[1]
@@ -45,6 +51,12 @@ class Ball:
             self.direction[0] = -self.direction[0]
             self.direction[1] = -self.direction[1]
 
+    def get_over(self):
+        return self.game_over
+
+    def is_game_over(self):
+        self.direction[0]=0
+        self.direction[1]=0
 
 class Platform:
     def __init__(self, screen_size, color):
@@ -53,19 +65,21 @@ class Platform:
         self.x, self.y = self.scr_width // 2, self.scr_height // 2
         self.w, self.h = (120, 30)
         self.width = 0
+        self.game_over = False
 
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, (self.x, self.y, self.w, self.h), self.width)
 
     def move(self, direction):
-        if direction == 'A':
-            self.cur_shift = -32
-            if self.x > 0:
-                self.x += self.cur_shift
-        if direction == 'D':
-            self.cur_shift = 32
-            if self.x + self.w < self.scr_width:
-                self.x += self.cur_shift
+        if not self.game_over:
+            if direction == 'A':
+                self.cur_shift = -32
+                if self.x > 0:
+                    self.x += self.cur_shift
+            if direction == 'D':
+                self.cur_shift = 32
+                if self.x + self.w < self.scr_width:
+                    self.x += self.cur_shift
 
     def stop(self):
         self.cur_shift = 0
@@ -77,9 +91,12 @@ class Platform:
         if self.y + self.h > self.scr_height:
             self.y = self.scr_height - self.h
 
+    def is_game_over(self):
+        self.game_over = True
+
 
 def main():
-    colors = {"BLACK": (0, 0, 0), "GREEN": (0, 255, 0), "BROWN": (139, 69, 19)}
+    colors = {"BLACK": (0, 0, 0), "GREEN": (0, 255, 0), "BROWN": (139, 69, 19), "RED": (255,0,0)}
     size = width, height = 800, 600
     pygame.init()
     screen = pygame.display.set_mode(size, pygame.RESIZABLE)
@@ -88,6 +105,7 @@ def main():
     platform = Platform(size, colors["BROWN"])
 
     game_over = False
+
     while not game_over:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -105,6 +123,18 @@ def main():
 
         screen.fill(colors["BLACK"])
         ball.draw(screen)
+
+        if ball.get_over():
+            ball.is_game_over()
+            platform.is_game_over()
+
+            pygame.font.init()
+            font = pygame.font.SysFont('Comic Sans MS',50,True)
+
+            data = "GAME OVER"
+            ts = font.render(data,False,colors["RED"])
+            screen.blit(ts,(width//2,height//2))
+
         ball.collides_with_platform(platform)
         platform.draw(screen)
 
