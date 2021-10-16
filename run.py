@@ -39,13 +39,19 @@ class Ball:
         if self.geometry.y + self.geometry.height > self.height:
             self.geometry.y = self.height - self.geometry.height
 
+    def collides_with_platform(self, platform):
+        if (self.geometry.x + self.geometry.width >= platform.x and self.geometry.x <= platform.x + platform.w) and (
+                self.geometry.y + self.geometry.height >= platform.y and self.geometry.y <= platform.y + platform.h):
+            self.direction[0] = -self.direction[0]
+            self.direction[1] = -self.direction[1]
+
 
 class Platform:
     def __init__(self, screen_size, color):
         self.color = color
         self.size = self.scr_width, self.scr_height = screen_size[0], screen_size[1]
         self.x, self.y = self.scr_width // 2, self.scr_height // 2
-        self.w, self.h = (100, 20)
+        self.w, self.h = (120, 30)
         self.width = 0
 
     def draw(self, screen):
@@ -53,11 +59,11 @@ class Platform:
 
     def move(self, direction):
         if direction == 'A':
-            self.cur_shift = -10
+            self.cur_shift = -32
             if self.x > 0:
                 self.x += self.cur_shift
         if direction == 'D':
-            self.cur_shift = 10
+            self.cur_shift = 32
             if self.x + self.w < self.scr_width:
                 self.x += self.cur_shift
 
@@ -99,6 +105,7 @@ def main():
 
         screen.fill(colors["BLACK"])
         ball.draw(screen)
+        ball.collides_with_platform(platform)
         platform.draw(screen)
 
         pygame.display.flip()
