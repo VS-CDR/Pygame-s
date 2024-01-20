@@ -1,1 +1,1 @@
-In this project, I practiced learning Pygame
+In this project, I practiced in Pygame
