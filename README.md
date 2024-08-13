@@ -1,1 +1,6 @@
-In this project, I practiced in Pygame
+# PygameProjects
+
+## This repo contains two projects
+
+- arcade tank
+- platformer
