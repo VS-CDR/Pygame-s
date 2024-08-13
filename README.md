@@ -1,4 +1,4 @@
-# PygameProjects
+# Pygame-s
 
 ## This repo contains two projects
 
